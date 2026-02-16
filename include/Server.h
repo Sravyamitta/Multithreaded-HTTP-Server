@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include <netinet/in.h>
+#include "ThreadPool.h"
 
 class Server {
 public:
@@ -12,6 +13,8 @@ private:
     int port;
     int server_fd;
     sockaddr_in address;
+
+    ThreadPool pool;
 
     void setupSocket();
     void handleClient(int client_socket);

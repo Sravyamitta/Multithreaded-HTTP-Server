@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-Server::Server(int port) : port(port), server_fd(-1) {}
+Server::Server(int port) : port(port), server_fd(-1), pool(4) {}
 
 void Server::setupSocket() {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -32,6 +32,7 @@ void Server::setupSocket() {
 }
 
 void Server::handleClient(int client_socket) {
+
     char buffer[1024] = {0};
     read(client_socket, buffer, 1024);
 
@@ -63,6 +64,8 @@ void Server::start() {
             continue;
         }
 
-        handleClient(client_socket);
+        pool.enqueue([this, client_socket]() {
+            handleClient(client_socket);
+        });
     }
 }
